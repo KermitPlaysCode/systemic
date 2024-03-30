@@ -1,0 +1,14 @@
+,Node1,Node2,Effet
+0,Clients,Business,p
+1,Business,Usages,p
+2,Usages,Applications,p
+3,Applications,Infrastructures,p
+4,Infrastructures,Energie,p
+5,Infrastructures,Matériaux,p
+6,Energie,Coût,p
+7,Matériaux,Coût,p
+8,Matériaux,Déchets,p
+9,Coût,Clients,m
+10,Efficacité,Matériaux,m
+11,Efficacité,Energie,m
+13,,,

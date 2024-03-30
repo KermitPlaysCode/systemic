@@ -9,8 +9,8 @@ config = {
     'Out_dir': './outputs/',
     'Out_file': 'systemic.png',
     'Effet': {
-        'p': ['#3c4486', '+'],
-        'm': ['#3d753e', '-']
+        '+': '#3c4486',
+        '-': '#3d753e'
         },
     'Container': None,
     'df': None,
@@ -20,9 +20,10 @@ config = {
 # Interface language
 global lang
 lang = {
-    'Button_label': "Mettre à jour",
-    'data': 'Données',
-    'graph': 'Graphique'
+    'Label_update': "Mettre à jour",
+    'Title_data': 'Données',
+    'Title_graph': 'Graphique',
+    'Label_download': 'Télécharger'
 }
 
 # Initialize graph and data
@@ -41,31 +42,45 @@ def update_edges() -> None:
         n1 = row['Node1']
         n2 = row['Node2']
         effect = row['Effet']
-        if n1 not in ["", None] and n2 not in ["", None] and effect != None and effect.strip() in ['p','m']:
+        if n1 not in ["", None] and n2 not in ["", None] and effect != None and effect.strip() in ['+','-']:
             effect = effect.strip()
             config['graph'].edge(n1,n2,
-                label=config['Effet'][effect][1],
-                color=config['Effet'][effect][0]
+                label=effect,
+                color=config['Effet'][effect]
                 )
     fn = config['graph'].unflatten(stagger = 2).render()
     config['Container'].image(fn, caption='systemic diagram', )
     return
 
+@st.cache_data
+def df_to_csv(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    # https://docs.streamlit.io/library/api-reference/widgets/st.download_button
+    return df.to_csv().encode('utf-8')
+
 # Present as a couple of columns
 col_data, col_graph = st.columns(2)
 
 # First, the data
-col_data.markdown(f"### {lang['data']}")
+col_data.markdown(f"### {lang['Title_data']}")
 config['df'] = col_data.data_editor(df_e,
                      num_rows="dynamic",
                      hide_index = True,
                      key = 'df_e_editor',
                      on_change=None
                      )
-col_data.button(label=lang['Button_label'], on_click=update_edges)
+
+dl_csv_data = df_to_csv(df_e)
+col_data.download_button(
+    label=lang['Label_download'],
+    data=dl_csv_data,
+    file_name="my-systemic-diagram.csv",
+    mime="text/csv"
+    )
+#col_data.button(label=lang['Label_update'], on_click=update_edges)
 
 # Second, the graph
-col_graph.markdown(f"### {lang['graph']}")
+col_graph.markdown(f"### {lang['Title_graph']}")
 config['Container'] = col_graph.empty()
 
 update_edges()

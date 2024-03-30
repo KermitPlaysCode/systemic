@@ -10,7 +10,9 @@ Pour cela :
 
 ## Environnement
 
-Développé sous Windows
+Développé et testé sous Windows. Semble prêt pour Linux, non testé.
+
+Le code Python :
 
 ```
 git clone https://github.com/KermitPlaysCode/systemic
@@ -18,6 +20,10 @@ cd systemic
 python -m venv .venv-win
 pip install -r requirements.txt
 ```
+
+Le module graphviz nécessite un binaire à téléchager ici :
+
+[https://graphviz.org/download/](https://graphviz.org/download/)
 
 ## Exécution
 

@@ -31,5 +31,5 @@ Un navigateur devrait s'ouvrir sur [https://127.0.0.1:8501](https://127.0.0.1:85
 
 Projet de bricolage à 2 objectifs :
 
-1- Tester streamlit
-2- Explorer la systémique
+1. Tester streamlit
+2. Explorer la systémique

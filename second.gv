@@ -1,0 +1,4 @@
+digraph {
+	v -> w
+	v -> u
+}

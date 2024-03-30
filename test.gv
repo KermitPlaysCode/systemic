@@ -1,0 +1,13 @@
+digraph {
+	subgraph "cluster I" {
+		x -> y
+		x -> z
+		x -> t
+		y -> t
+	}
+	subgraph "cluster II" {
+		v -> w
+		v -> u
+	}
+	x -> w
+}

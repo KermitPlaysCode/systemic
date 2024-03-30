@@ -2,8 +2,8 @@ import streamlit as st
 import graphviz
 import pandas as pd
 
-global config
-config = {
+global configIo
+ConfigIo = {
     'Edges_csv_init': 'edges-systemic-base.csv',
     'Edges_csv' : 'edges-systemic.csv',
     'Out_dir': './outputs/',
@@ -14,12 +14,26 @@ config = {
         },
     'Container': None,
     'df': None,
-    'graph': None
+}
+
+ConfigDigraph = {
+    'graph': None,
+    'RenderEngine': "dot",
+    'RenderOptions': {
+        'dot': {},
+        'neato': { 'overlay': 'scalexy' },
+#        'sfdp': { 'rotation': 90 },
+#        'patchwork': {},
+#        'twopi': {},
+#        'circo': {},
+#        'osage': {},
+#        'fdp': {}
+    }
 }
 
 # Interface language
-global lang
-lang = {
+global ConfigLang
+ConfigLang = {
     'Label_update': "Mettre à jour",
     'Title_data': 'Données',
     'Title_graph': 'Graphique',
@@ -27,29 +41,36 @@ lang = {
 }
 
 # Initialize graph and data
-config['graph'] = graphviz.Digraph(format='png', directory=config['Out_dir'], filename=config['Out_file'])
-df_e = pd.read_csv(config['Edges_csv_init'], delimiter=',', header=0)
+ConfigDigraph['graph'] = graphviz.Digraph(
+    format='png',
+    directory=ConfigIo['Out_dir'],
+    filename=ConfigIo['Out_file'],
+    engine=ConfigDigraph['RenderEngine'],
+    graph_attr=ConfigDigraph['RenderOptions'][ConfigDigraph['RenderEngine']]
+    )
+df_e = pd.read_csv(ConfigIo['Edges_csv_init'], delimiter=',', header=0)
 
 # Function to save edges and refresh graph
-def update_edges() -> None:
+def UpdateEdges() -> None:
     """Write down df to csv
     Update the graph based on data"""
     # Write df to CSV
-    config['df'].to_csv(config['Edges_csv'])
+    ConfigIo['df'].to_csv(ConfigIo['Edges_csv'])
     # Re-create diagram
-    config['graph'].clear()
-    for index, row in config['df'].iterrows():
+    ConfigDigraph['graph'].clear()
+    for index, row in ConfigIo['df'].iterrows():
         n1 = row['Node1']
         n2 = row['Node2']
         effect = row['Effet']
         if n1 not in ["", None] and n2 not in ["", None] and effect != None and effect.strip() in ['+','-']:
             effect = effect.strip()
-            config['graph'].edge(n1,n2,
+            ConfigDigraph['graph'].edge(n1,n2,
                 label=effect,
-                color=config['Effet'][effect]
+                color=ConfigIo['Effet'][effect]
                 )
-    fn = config['graph'].unflatten(stagger = 2).render()
-    config['Container'].image(fn, caption='systemic diagram', )
+    # fn = ConfigDigraph['graph'].unflatten(stagger = 2).render(ConfigDigraph['RenderEngine'])
+    fn = ConfigDigraph['graph'].render(ConfigDigraph['RenderEngine'])
+    ConfigIo['Container'].image(fn, caption='systemic diagram', )
     return
 
 @st.cache_data
@@ -62,8 +83,8 @@ def df_to_csv(df):
 col_data, col_graph = st.columns(2)
 
 # First, the data
-col_data.markdown(f"### {lang['Title_data']}")
-config['df'] = col_data.data_editor(df_e,
+col_data.markdown(f"### {ConfigLang['Title_data']}")
+ConfigIo['df'] = col_data.data_editor(df_e,
                      num_rows="dynamic",
                      hide_index = True,
                      key = 'df_e_editor',
@@ -71,16 +92,18 @@ config['df'] = col_data.data_editor(df_e,
                      )
 
 dl_csv_data = df_to_csv(df_e)
+Engines = list(ConfigDigraph['RenderOptions'].keys())
 col_data.download_button(
-    label=lang['Label_download'],
+    label=ConfigLang['Label_download'],
     data=dl_csv_data,
     file_name="my-systemic-diagram.csv",
     mime="text/csv"
     )
-#col_data.button(label=lang['Label_update'], on_click=update_edges)
+#col_data.button(label=ConfigLang['Label_update'], on_click=UpdateEdges)
 
 # Second, the graph
-col_graph.markdown(f"### {lang['Title_graph']}")
-config['Container'] = col_graph.empty()
+col_graph.markdown(f"### {ConfigLang['Title_graph']}")
+ConfigDigraph['RenderEngine'] = col_graph.radio(label="Moteur", key="Moteur", options=Engines)
+ConfigIo['Container'] = col_graph.empty()
 
-update_edges()
+UpdateEdges()

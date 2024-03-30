@@ -1,14 +1,20 @@
-Node1,Node2,Effet
-Clients,Business,+
-Business,Usage,+
-Usage,Applications,+
-Applications,Infrastructures,+
-Infrastructures,Energie,+
-Infrastructures,Matériaux,+
-Energie,Coût,+
-Matériaux,Coût,+
-Matériaux,waste,+
-Coût,Clients,-
-Efficacité,Matériaux,-
-Efficacité,Energie,-
-Efficacité,Applications,-
+,Node1,Node2,Effet
+0,Clients,Business as usual,+
+1,Business as usual,Usage,+
+2,Usage,Applications,+
+3,Applications,Infrastructures,+
+4,Infrastructures,Energie,+
+5,Infrastructures,Matériaux,+
+6,Energie,Coût,+
+7,Matériaux,Coût,+
+8,Matériaux,waste,+
+9,Coût,Clients,-
+10,Efficacité,Infrastructures,-
+12,Efficacité,Applications,-
+13,Business as usual,Algorithmes addictifs,+
+14,Algorithmes addictifs,Clients,+
+15,Algorithmes addictifs,Usage,+
+16,Sobriété,Usage,-
+17,Sobriété,Algorithmes addictifs,-
+18,Business within planetary limits,Sobriété,+
+19,Clients,Business within planetary limits,+

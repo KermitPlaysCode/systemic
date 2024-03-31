@@ -1,3 +1,4 @@
 /.venv*
 systemic.code-workspace
 /outputs/
+/.predelete/

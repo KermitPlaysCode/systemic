@@ -1,6 +1,0 @@
-digraph {
-	x -> y
-	x -> z
-	x -> t
-	y -> t
-}

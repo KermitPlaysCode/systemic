@@ -30,29 +30,27 @@ ConfigDigraph = {
         },
     'flatten': False
 }
+Engines = list(ConfigDigraph['RenderOptions'].keys())
 
 # Interface language
 global ConfigLang
 ConfigLang = {
     'Title_data': 'Données',
+    'Title_data_egdes': 'Données "edges"',
+    'Title_data_nodes': 'Données "nodes"',
     'Title_graph': 'Graphique',
-    'LabelGetNodes': "Télécharger les Noeuds (csv)",
-    'LabelGetEdges': 'Télécharger les Edges (csv)',
-    'Flatten': 'Aplatir'
+    'Title_config': 'Configuration',
+    'Flatten': 'Aplatir',
+    'TabText': 'Données et configuration',
+    'TabGraph': 'Graphe',
+    'LabelUpdateVersion': 'Version du code de mise à jour',
+    'LabelEngine': "Moteur de rendu",
+    'WarningDevV2': "Attention, v2 en DEV !",
+    'DataDownload': 'Pour télécharger un jeu de données en CSV, utiliser l\'icône ![](img/dl.png) sur l\'éditeur. '
 }
 
-# Function to save edges as CSV
-def SaveEdges() -> None:
-    """Write down df of edges to csv"""
-    ConfigIo['df_edges'].to_csv(ConfigIo['Edges_csv'], index=False)
-    return
-
-def SaveNodes() -> None:
-    """Write down df of nodes to csv"""
-    ConfigIo['df_cluster'].to_csv(ConfigIo['Edges_csv'], index=False)
-    return
-
-# Function to refresh graph
+# Function to refresh graph v1
+# Simple drawing based on a single graph
 def UpdateGraph_v1() -> None:
     """Update the graph based on data"""
     # Re-create diagram
@@ -74,15 +72,14 @@ def UpdateGraph_v1() -> None:
     ConfigIo['Container'].image(fn, caption='systemic diagram')
     return
 
-# Rewrite to handle clusters
+# Function to refresh graph v2
+# More advanced drawing based on a 'main' graph and subgraphes attached to it
 def UpdateGraph_v2() -> None:
     """Update the graph based on data"""
-    col_graph.warning("v2 EN DEV")
     # lists : configured clusters and created subgraphs
     list_clusters = DfNodes['Cluster'].fillna(value="main").unique().tolist()
     if "main" in list_clusters:
         list_clusters = list_clusters.remove("main")
-    st.write(list_clusters)
     # Clear diagram main
     ConfigDigraph['graphes']['main'].clear()
     # Create 1 subgraph per cluster
@@ -110,7 +107,6 @@ def UpdateGraph_v2() -> None:
         effect = row.Effet
         c1 = row.ClusterNode1
         c2 = row.ClusterNode2
-        res = f"{count}, {n1}, {n2}, {effect}, {c1}, {c2} "
         # 2 noeuds dans un même cluster de subgraph:
         test_values = n1 not in ["", None] and n2 not in ["", None] and effect in ['+','-']
         if test_values and c1 == c2:
@@ -119,7 +115,6 @@ def UpdateGraph_v2() -> None:
                 label=effect,
                 color=ConfigDigraph['Effet'][effect]
                 )
-            res += f"> digraph {c1} "
         # 2 nodes dans différents clsuters OU dans graph
         elif test_values:
             ConfigDigraph['graphes']['main'].edge(
@@ -127,10 +122,6 @@ def UpdateGraph_v2() -> None:
                 label=effect,
                 color=ConfigDigraph['Effet'][effect]
                 )
-            res += "> digraph main"
-        else:
-            res += "> tests failed, edge not created"
-        st.write(res)
     for cl in list_clusters:
         ConfigDigraph['graphes']['main'].subgraph(ConfigDigraph['graphes'][cl])
         ConfigDigraph['graphes'][cl].render()
@@ -170,71 +161,59 @@ ConfigDigraph['graph']= graphviz.Digraph(
     graph_attr=ConfigDigraph['RenderOptions'][ConfigDigraph['RenderEngine']]
     )
 
-# Config the layout
+# Page layout
+# - page config
 st.set_page_config(
     page_title='Systemic designer',
     page_icon=":shark:",
     layout="wide"
 )
+# Present in a couple of tabs
+tab_txt, tab_grf = st.tabs([ConfigLang['TabText'],ConfigLang['TabGraph']])
+col_graph = tab_grf # trick as I added tabs
 
-# Present as a couple of columns
-col_data, col_graph = st.columns(2)
-
-# First, populate the data column
+# DATA : first, populate the data column
 ## Title and editable pandas for edges
-col_data.markdown(f"### {ConfigLang['Title_data']}")
-ConfigIo['df_edges'] = col_data.data_editor(DfEdges,
+tab_txt.markdown(f"## {ConfigLang['TabText']}")
+col_data_edges, col_data_nodes, col_config = tab_txt.columns(3)
+col_data_edges.markdown(f"### {ConfigLang['Title_data_egdes']}")
+col_data_nodes.markdown(f"### {ConfigLang['Title_data_nodes']}")
+
+ConfigIo['df_edges'] = col_data_edges.data_editor(DfEdges,
                     num_rows="dynamic",
                     hide_index = True,
                     key = 'DfEdges_editor',
                     on_change=None
                     )
-ConfigIo['df_nodes'] = col_data.data_editor(DfNodes,
+ConfigIo['df_nodes'] = col_data_nodes.data_editor(DfNodes,
                     num_rows="dynamic",
                     hide_index = True,
                     key = 'DfNodes_editor',
                     on_change=None
                     )
 
-## Download button : CSV data of edges
-dl_csv_data = DfEdges.to_csv().encode('utf-8')
-col_data.download_button(
-    label=ConfigLang['LabelGetEdges'],
-    data=dl_csv_data,
-    file_name="my-systemic-diagram.csv",
-    mime="text/csv"
-    )
-
-## Download button : CSV data of Nodes
-nodes = ConfigIo['df_edges']['Node1'].combine_first(ConfigIo['df_edges']['Node2']).to_list()
-nodes = "\n".join(nodes)
-col_data.download_button(
-    label=ConfigLang['LabelGetNodes'],
-    data=nodes.encode('utf-8'),
-    file_name='my-systemic-nodes.csv',
-    mime='text/csv'
-    )
-
-# Second, the graph column
-# Title and render engine option
-col_graph.markdown(f"### {ConfigLang['Title_graph']}")
-col_graph_col1, col_graph_col2 = col_graph.columns(2)
-
-## Graph
-Engines = list(ConfigDigraph['RenderOptions'].keys())
-ConfigDigraph['RenderEngine'] = col_graph_col1.radio(label="Moteur", key="Moteur", options=Engines)
-ConfigIo['UpdateVersion'] = col_graph_col2.radio(label="Update version", key="Version", options=['v1','v2'], captions=['Old','New'])
-st.write("V=",ConfigIo['UpdateVersion'])
-# Checkbox for 'flatten'
-ConfigIo['flatten'] = col_graph.checkbox(label=ConfigLang['Flatten'], value=False)
-
-
+# GRAPH: second, the graph column
+## Title and graph place
+tab_grf.markdown(f"## {ConfigLang['Title_graph']}")
 ConfigIo['Container'] = col_graph.divider()
+
+# CONFIG: third, the config column
+## Title
+col_config.markdown(f"### {ConfigLang['Title_config']}")
+## Radio options : engine and version
+ConfigDigraph['RenderEngine'] = col_config.radio(label=ConfigLang['LabelEngine'], key="Moteur", options=Engines)
+ConfigIo['UpdateVersion'] = col_config.radio(label=ConfigLang['LabelUpdateVersion'], key="Version", options=['v1','v2'], captions=['Old','New'])
+## Checkbox for 'flatten'
+ConfigIo['flatten'] = col_config.checkbox(label=ConfigLang['Flatten'], value=False)
+
+col_config.markdown(ConfigLang['DataDownload'])
+
 # Process data to produce the graph
 if ConfigIo['UpdateVersion'] == 'v1':
     UpdateGraph_v1()
 elif ConfigIo['UpdateVersion'] == 'v2':
     ConfigDigraph['graphes']['main'] = ConfigDigraph['graph']
+    col_config.warning(ConfigLang['WarningDevV2'])
     UpdateGraph_v2()
 else:
-    st.write("Invalid version")
+    st.error("Invalid version")

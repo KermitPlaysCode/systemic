@@ -46,7 +46,7 @@ ConfigLang = {
     'LabelUpdateVersion': 'Version du code de mise à jour',
     'LabelEngine': "Moteur de rendu",
     'WarningDevV2': "Attention, v2 en DEV !",
-    'DataDownload': 'Pour télécharger un jeu de données en CSV, utiliser l\'icône ![](img/dl.png) sur l\'éditeur. '
+    'DataDownload': 'Pour télécharger un jeu de données en CSV, utiliser l\'icône ![](img/dl.png) sur l\'éditeur.',
 }
 
 # Function to refresh graph v1

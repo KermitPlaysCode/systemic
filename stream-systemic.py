@@ -2,6 +2,16 @@ import streamlit as st
 import graphviz
 import pandas as pd
 
+NodesTypeToShape = {
+    '':'box',
+    'Stock': 'box',
+    'Influencer': 'point'
+}
+NodesTypeToColor = {
+    'Stock': 'black',
+    'Influencer': 'white'
+}
+
 # IO and vars used across the programm
 global configIo
 ConfigIo = {
@@ -77,9 +87,9 @@ def UpdateGraph_v1() -> None:
 def UpdateGraph_v2() -> None:
     """Update the graph based on data"""
     # lists : configured clusters and created subgraphs
-    list_clusters = DfNodes['Cluster'].fillna(value="main").unique().tolist()
+    list_clusters = DfNodes['Cluster'].dropna().unique().tolist()
     if "main" in list_clusters:
-        list_clusters = list_clusters.remove("main")
+        list_clusters.remove("main")
     # Clear diagram main
     ConfigDigraph['graphes']['main'].clear()
     # Create 1 subgraph per cluster
@@ -95,9 +105,13 @@ def UpdateGraph_v2() -> None:
 
 
     # Prepare data using edges and nodes infos
-    df_rework = DfEdges.join(DfNodes.set_index('Node'), on='Node1').rename(columns={'Cluster': 'ClusterNode1'})
-    df_rework = df_rework.join(DfNodes.set_index('Node'), on='Node2').rename(columns={'Cluster': 'ClusterNode2'})
+    df_rework = DfEdges.join(DfNodes.set_index('Node').drop('NodeType', axis=1), on='Node1').rename(columns={'Cluster': 'ClusterNode1'})
+    df_rework = df_rework.join(DfNodes.set_index('Node').drop('NodeType', axis=1), on='Node2').rename(columns={'Cluster': 'ClusterNode2'})
     df_rework.fillna(value="main", inplace=True)
+    # Prepare nodes
+    for tup in DfNodes.itertuples(index=False):
+        (node, cluster, nodetype) = tup
+        ConfigDigraph['graphes'][cluster].node(name=node, color=NodesTypeToColor[nodetype], label=node)
     # Go through data to process edges
     count = 0
     for row in df_rework.itertuples(index=False):

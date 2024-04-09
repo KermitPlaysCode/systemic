@@ -2,6 +2,16 @@ import streamlit as st
 import graphviz
 import pandas as pd
 
+NodesTypeToShape = {
+    '':'box',
+    'Stock': 'box',
+    'Influencer': 'point'
+}
+NodesTypeToColor = {
+    'Stock': 'black',
+    'Influencer': 'white'
+}
+
 # IO and vars used across the programm
 global configIo
 ConfigIo = {
@@ -77,27 +87,34 @@ def UpdateGraph_v1() -> None:
 def UpdateGraph_v2() -> None:
     """Update the graph based on data"""
     # lists : configured clusters and created subgraphs
-    list_clusters = DfNodes['Cluster'].fillna(value="main").unique().tolist()
+    list_clusters = ConfigIo['df_nodes']['Cluster'].dropna().unique().tolist()
     if "main" in list_clusters:
-        list_clusters = list_clusters.remove("main")
+        list_clusters.remove("main")
     # Clear diagram main
     ConfigDigraph['graphes']['main'].clear()
     # Create 1 subgraph per cluster
+    CDkeys = ConfigDigraph['graphes'].keys()
     for cl in list_clusters:
-        ConfigDigraph['graphes'][cl] = graphviz.Digraph(
-            name='cluster '+cl,
-            format='png',
-            directory=ConfigIo['Out_dir'],
-            filename=ConfigIo['Out_file'] + '-' + cl,
-            engine=ConfigDigraph['RenderEngine'],
-            graph_attr=ConfigDigraph['RenderOptions'][ConfigDigraph['RenderEngine']]
-        )
-
+        if cl not in CDkeys:
+            ConfigDigraph['graphes'][cl] = graphviz.Digraph(
+                name='cluster '+cl,
+                format='png',
+                directory=ConfigIo['Out_dir'],
+                filename=ConfigIo['Out_file'] + '-' + cl,
+                engine=ConfigDigraph['RenderEngine'],
+                graph_attr=ConfigDigraph['RenderOptions'][ConfigDigraph['RenderEngine']]
+            )
+        else:
+            ConfigDigraph['graphes'][cl].clear()
 
     # Prepare data using edges and nodes infos
-    df_rework = DfEdges.join(DfNodes.set_index('Node'), on='Node1').rename(columns={'Cluster': 'ClusterNode1'})
-    df_rework = df_rework.join(DfNodes.set_index('Node'), on='Node2').rename(columns={'Cluster': 'ClusterNode2'})
+    df_rework = ConfigIo['df_edges'].join(ConfigIo['df_nodes'].set_index('Node').drop('NodeType', axis=1), on='Node1').rename(columns={'Cluster': 'ClusterNode1'})
+    df_rework = df_rework.join(ConfigIo['df_nodes'].set_index('Node').drop('NodeType', axis=1), on='Node2').rename(columns={'Cluster': 'ClusterNode2'})
     df_rework.fillna(value="main", inplace=True)
+    # Prepare nodes
+    for tup in DfNodes.itertuples(index=False):
+        (node, cluster, nodetype) = tup
+        ConfigDigraph['graphes'][cluster].node(name=node, color=NodesTypeToColor[nodetype], label=node)
     # Go through data to process edges
     count = 0
     for row in df_rework.itertuples(index=False):
@@ -161,6 +178,9 @@ ConfigDigraph['graph']= graphviz.Digraph(
     graph_attr=ConfigDigraph['RenderOptions'][ConfigDigraph['RenderEngine']]
     )
 
+# Default update version
+UpdateGraph = UpdateGraph_v1
+
 # Page layout
 # - page config
 st.set_page_config(
@@ -183,13 +203,13 @@ ConfigIo['df_edges'] = col_data_edges.data_editor(DfEdges,
                     num_rows="dynamic",
                     hide_index = True,
                     key = 'DfEdges_editor',
-                    on_change=None
+                    on_change=UpdateGraph
                     )
 ConfigIo['df_nodes'] = col_data_nodes.data_editor(DfNodes,
                     num_rows="dynamic",
                     hide_index = True,
                     key = 'DfNodes_editor',
-                    on_change=None
+                    on_change=UpdateGraph
                     )
 
 # GRAPH: second, the graph column
@@ -210,10 +230,12 @@ col_config.markdown(ConfigLang['DataDownload'])
 
 # Process data to produce the graph
 if ConfigIo['UpdateVersion'] == 'v1':
-    UpdateGraph_v1()
+    UpdateGraph = UpdateGraph_v1
+    UpdateGraph()
 elif ConfigIo['UpdateVersion'] == 'v2':
     ConfigDigraph['graphes']['main'] = ConfigDigraph['graph']
     col_config.warning(ConfigLang['WarningDevV2'])
-    UpdateGraph_v2()
+    UpdateGraph = UpdateGraph_v2
+    UpdateGraph()
 else:
     st.error("Invalid version")

@@ -1,14 +1,14 @@
-Node,Cluster
-Clients,Externe
-Applications,IT
-Infrastructures,IT
-Matériaux,IT
-Energie,IT
-Business as usual,OldBiz
-Algorithmes addictifs,OldBiz
-Business within planetary limits,NewBiz
-Usage,divers
-Efficacité,IT
-Coût,divers
-Sobriété,NewBiz
-Déchets,IT
+Node,Cluster,NodeType
+Clients,main,Influencer
+Applications,IT,Stock
+Infrastructures,IT,Stock
+Matériaux,IT,Stock
+Energie,IT,Stock
+Business as usual,OldBiz,Stock
+Algorithmes addictifs,OldBiz,Stock
+Business within planetary limits,NewBiz,Stock
+Usage,divers,Influencer
+Efficacité,IT,Influencer
+Coût,divers,Influencer
+Sobriété,NewBiz,Influencer
+Déchets,IT,Stock

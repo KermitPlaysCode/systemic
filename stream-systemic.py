@@ -50,7 +50,6 @@ ConfigLang = {
     'TabGraph': 'Graphe',
     'LabelUpdateVersion': 'Version du code de mise à jour',
     'LabelEngine': "Moteur de rendu",
-    'WarningDevV2': "Attention, v2 en DEV !",
     'DataDownload': 'Pour télécharger un jeu de données en CSV, utiliser l\'icône ![dl](static/dl.png) sur l\'éditeur.',
 }
 
@@ -227,7 +226,6 @@ if ConfigIo['UpdateVersion'] == 'v1':
     UpdateGraph()
 elif ConfigIo['UpdateVersion'] == 'v2':
     ConfigDigraph['graphes']['main'] = ConfigDigraph['graph']
-    col_config.warning(ConfigLang['WarningDevV2'])
     UpdateGraph = UpdateGraph_v2
     UpdateGraph()
 else:

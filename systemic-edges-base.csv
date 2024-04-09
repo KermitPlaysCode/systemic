@@ -1,21 +1,18 @@
 Node1,Node2,Effet
-Clients,Business as usual,+
-Business as usual,Usage,+
-Usage,Applications,+
+Usages,Applications,+
 Applications,Infrastructures,+
 Infrastructures,Energie,+
 Infrastructures,Matériaux,+
 Energie,Coût,+
+Coût,Usages,-
 Matériaux,Coût,+
 Matériaux,Déchets,+
-Coût,Clients,-
 Efficacité,Infrastructures,-
 Efficacité,Applications,-
-Business as usual,Algorithmes addictifs,+
-Algorithmes addictifs,Clients,+
-Algorithmes addictifs,Usage,+
-Sobriété,Usage,-
-Sobriété,Algorithmes addictifs,-
-Business within planetary limits,Sobriété,+
-Clients,Business within planetary limits,+
-Business as usual,Efficacité,+
+Business As Usual,Algorithmes addictifs,+
+Algorithmes addictifs,Usages,+
+Sobriété offre,Algorithmes addictifs,-
+Sobriété offre,Economie fonctionnalité,+
+Economie fonctionnalité,Usages,-
+Business dans limites planétaires,Sobriété offre,+
+Sobriété demande,Usages,-

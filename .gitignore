@@ -2,3 +2,6 @@
 systemic.code-workspace
 /outputs/
 /.predelete/
+functions.py
+~$*.xlsx
+__pycache__/

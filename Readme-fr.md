@@ -2,16 +2,8 @@
 
 ## Objet
 
-Afficher un graphe de systémique, dynamiquement mis à jour, au travers d'un navigateur web.
+Afficher un graphe de système, défini dans un fichier et rendu dans un navigateur web
 
-Pour cela :
-
-- Lire les données :
-  - Liens du graphe depuis 'edges-systemic-base.csv' (les noeuds sont déduits)
-  - Définitions des noeuds par cluster (plutôt expérimental)
-- Afficher un graphe, avec au choix :
-  - v1 : afficher sans cluster
-  - v2 : afficher en prenant en compte les clusters
 
 ## Environnement de développement
 
@@ -33,11 +25,16 @@ Le module graphviz nécessite un binaire à téléchager ici :
 
 ## Exécution
 
+Editer le fichier 'systemic-base.xlsx'
+
 ```
 streamlit run stream-systemic.py
 ```
 
 Un navigateur devrait s'ouvrir sur [https://127.0.0.1:8501](https://127.0.0.1:8501).
+
+Le fichier xlsx peut-être édité & enregistré pendant que le programme tourne.
+La mise à jour s'effectue grâce au bouton "Reload"
 
 Pour terminer, Ctrl^C dans la fenêtre d'exécution de streamlit.
 
@@ -46,4 +43,5 @@ Pour terminer, Ctrl^C dans la fenêtre d'exécution de streamlit.
 Modeste. Ceci est un projet de bricolage à 2 objectifs :
 
 1. Tester streamlit
-2. Explorer la systémique
+2. tester Graphviz
+3. Explorer le graphe de système (largement incomplet !)

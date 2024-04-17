@@ -93,7 +93,7 @@ class SystemicData:
                                                     directory=self.config['Out_dir'],
                                                     filename=self.config['Out_file'] + '-' + cl,
                                                     engine=self.config['RenderEngine'],
-                                                    graph_attr=self.config['RenderOptions'][self.config['RenderEngine']]
+                                                    graph_attr=self.config['RenderOptions'][self.config['RenderEngine']],
                 )
             else:
                 self.graphes[cl].clear()

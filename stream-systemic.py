@@ -12,25 +12,19 @@ config = {
         },
     'RenderEngine': "dot",
     'RenderOptions': {
-        'dot': {},
-        'neato': { 'overlay': 'scalexy' },
+        'dot': { 'orientation': "[lL]*" },
+        'neato': { 'overlay': 'scalexy' }
     },
     'OutputFormat': 'png',
 }
 
 # Interface language
 ConfigLang = {
-    'Title_data': 'Données',
-    'Title_data_egdes': 'Données "edges"',
-    'Title_data_nodes': 'Données "nodes"',
-    'Title_graph': 'Graphique',
-    'Flatten': 'Aplatir',
     'TabText': 'Données',
     'TabGraph': 'Graphe',
-    'LabelUpdateVersion': 'Version du code de mise à jour',
-    'LabelEngine': "Moteur de rendu",
-    'DataDownload': 'Pour télécharger un jeu de données en CSV, utiliser l\'icône ![dl](static/dl.png) sur l\'éditeur.',
-    'ButtonReload': 'Recharger'
+    'ButtonReload': 'Recharger',
+    'Title_data_egdes': 'Données "edge"',
+    'Title_data_nodes': 'Données "nodes"'
 }
 
 systd = SystemicData(config)

@@ -66,9 +66,9 @@ class SystemicData:
 
     def reload(self) -> None:
         """Reload data files (useful if edited by other software)"""
-        if self.file_type is 'csv':
+        if self.file_type == 'csv':
             self.load(csv_nodes=self.files[0], csv_edges=self.files[1])
-        if self.file_type is 'excel':
+        if self.file_type == 'excel':
             self.load(excel=self.files[0])
     
     def retrieve(self, item="edges") -> dict:
@@ -89,7 +89,7 @@ class SystemicData:
         for cl in list_clusters:
             if cl not in existing_clusters:
                 self.graphes[cl] = graphviz.Digraph(name = 'cluster '+cl,
-                                                    format='png',
+                                                    format=self.config['OutputFormat'],
                                                     directory=self.config['Out_dir'],
                                                     filename=self.config['Out_file'] + '-' + cl,
                                                     engine=self.config['RenderEngine'],
@@ -104,7 +104,7 @@ class SystemicData:
         # Create nodes
         for nodes_tup in self.df_nodes.itertuples(index=False):
             (node, cluster, nodetype) = nodes_tup
-            self.graphes[cluster].node(name=node, color=NodesTypeToColor[nodetype], lavel=node)
+            self.graphes[cluster].node(name=node, color=NodesTypeToColor[nodetype], label=node)
         # Create edges
         for row in df_rework.itertuples(index=False):
             n1, n2, effect = row.Node1, row.Node2, row.Effet
@@ -119,12 +119,12 @@ class SystemicData:
                 tgt_c = 'main'
             self.graphes[tgt_c].edge(
                 n1,n2,
-                label=effect,
-                color=self.config['Effet'][effect]
+                #label=effect,
+                headlabel=effect,
+                color=self.config['Effet'][effect],
                 )
         list_clusters.remove('main')
         for cl in list_clusters:
             self.graphes['main'].subgraph(self.graphes[cl])
         self.image_path = self.graphes['main'].render()
         return
-    

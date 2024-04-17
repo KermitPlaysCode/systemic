@@ -14,9 +14,8 @@ config = {
     'RenderOptions': {
         'dot': {},
         'neato': { 'overlay': 'scalexy' },
-    }
-#    'UpdateVersion': 'v2',
-#   'flatten': False
+    },
+    'OutputFormat': 'png',
 }
 
 # Interface language

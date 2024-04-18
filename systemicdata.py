@@ -104,7 +104,12 @@ class SystemicData:
         # Create nodes
         for nodes_tup in self.df_nodes.itertuples(index=False):
             (node, cluster, nodetype) = nodes_tup
-            self.graphes[cluster].node(name=node, color=NodesTypeToColor[nodetype], label=node)
+            self.graphes[cluster].node(
+                name=node,
+                color=NodesTypeToColor[nodetype],
+                label=node,
+                shape='box'
+                )
         # Create edges
         for row in df_rework.itertuples(index=False):
             n1, n2, effect = row.Node1, row.Node2, row.Effet
@@ -119,9 +124,11 @@ class SystemicData:
                 tgt_c = 'main'
             self.graphes[tgt_c].edge(
                 n1,n2,
-                #label=effect,
                 headlabel=effect,
                 color=self.config['Effet'][effect],
+                dir='both',
+                arrowtail='dot',
+                penwidth='2.5'
                 )
         list_clusters.remove('main')
         for cl in list_clusters:

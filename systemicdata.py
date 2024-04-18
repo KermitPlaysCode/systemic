@@ -70,7 +70,7 @@ class SystemicData:
             self.load(csv_nodes=self.files[0], csv_edges=self.files[1])
         if self.file_type == 'excel':
             self.load(excel=self.files[0])
-    
+
     def retrieve(self, item="edges") -> dict:
         """Sends "edges" or "nodes" infos as a dict"""
         if item == "nodes":

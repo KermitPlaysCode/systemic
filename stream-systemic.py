@@ -7,8 +7,8 @@ config = {
     'Out_file': 'systemic',
     # Color for arrows in systemic graph : positive of negative effect
     'Effet': {
-        '+': '#3c4486',
-        '-': '#3d753e'
+        '+': '#486cff', #'#53d8fe', # '#3c4486',
+        '-': '#05c525'
         },
     'RenderEngine': "dot",
     'RenderOptions': {
